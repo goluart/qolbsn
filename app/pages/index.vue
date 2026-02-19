@@ -1,8 +1,6 @@
 <!-- pages/index.vue -->
 <template>
   <div>
-    <TheHeader />
-
     <div class="container">
       <div class="info-banner">
         <p>
@@ -12,7 +10,6 @@
       </div>
 
       <div class="timer-grid">
-        <!-- Loop through each boss -->
         <div v-for="boss in bossData" :key="boss.name" class="boss-card">
           <div class="boss-header">
             <h3 class="boss-name">{{ boss.name }}</h3>
@@ -23,17 +20,15 @@
             <div style="margin-bottom: 0.5rem">
               <span
                 class="status-indicator"
-                :class="
-                  getStatusClass(getNextSpawn(boss.schedule).minutesUntil)
-                "
+                :class="getStatusClass(getNextSpawn(boss.schedule).minutesUntil)"
               ></span>
               {{ getStatusText(getNextSpawn(boss.schedule).minutesUntil) }}
             </div>
             <div class="time-remaining">
-              {{ formatTime(getNextSpawn(boss.schedule).minutesUntil) }}
+              {{ formatTimeRemaining(getNextSpawn(boss.schedule).minutesUntil) }}
             </div>
             <div class="next-spawn">
-              {{ getNextSpawn(bosss.schedule).day }} at
+              {{ getNextSpawn(boss.schedule).day }} at
               {{ getNextSpawn(boss.schedule).time }}
             </div>
           </div>
@@ -57,7 +52,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-// Boss data (later we can move this to a separate file)
 const bossData = ref([
   {
     name: "Blackram Supply Chain",
@@ -108,7 +102,6 @@ const bossData = ref([
   }
 ])
 
-// Calculate next spawn time
 function getNextSpawn(schedule) {
   const now = new Date()
   const serverTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }))
@@ -128,29 +121,27 @@ function getNextSpawn(schedule) {
     
     let dayDiff = spawnDayIndex - currentDayIndex
     if (dayDiff < 0) dayDiff += 7
-    if (dayDiff === 0 && spawnTime < currentTime) dayDiff = 7
+    if (dayDiff === 0 && spawnTime <= currentTime) dayDiff = 7
     
     const totalMinutesDiff = dayDiff * 24 * 60 + (spawnTime - currentTime)
     
     if (totalMinutesDiff > 0 && totalMinutesDiff < minDiff) {
       minDiff = totalMinutesDiff
-      nextSpawn = {
-        ...spawn,
-        minutesUntil: totalMinutesDiff
-      }
+      nextSpawn = { ...spawn, minutesUntil: totalMinutesDiff }
     }
   })
-  
-  return nextSpawn || schedule[0]
+
+  // Fallback: return first schedule item with a safe minutesUntil
+  return nextSpawn || { ...schedule[0], minutesUntil: 0 }
 }
 
-// Format time remaining
 function formatTimeRemaining(minutes) {
+  if (!minutes) return '0m'
   const days = Math.floor(minutes / (24 * 60))
   const hours = Math.floor((minutes % (24 * 60)) / 60)
   const mins = Math.floor(minutes % 60)
   
-  let parts = []
+  const parts = []
   if (days > 0) parts.push(`${days}d`)
   if (hours > 0) parts.push(`${hours}h`)
   if (mins > 0 || parts.length === 0) parts.push(`${mins}m`)
@@ -158,36 +149,28 @@ function formatTimeRemaining(minutes) {
   return parts.join(' ')
 }
 
-// Get status class for styling
 function getStatusClass(minutes) {
-  if (minutes < 15) return 'status-spawned'
+  if (!minutes || minutes < 15) return 'status-spawned'
   if (minutes < 60) return 'status-upcoming'
   return 'status-active'
 }
 
-// Get status text
 function getStatusText(minutes) {
-  if (minutes < 15) return 'SPAWNING NOW!'
+  if (!minutes || minutes < 15) return 'SPAWNING NOW!'
   if (minutes < 60) return 'UPCOMING SOON'
   return 'Next Spawn In'
 }
 
-// Auto-update timer
 let updateInterval = null
 
 onMounted(() => {
-  // Update every minute
   updateInterval = setInterval(() => {
-    // Force re-render by updating a reactive value
     bossData.value = [...bossData.value]
   }, 60000)
 })
 
 onUnmounted(() => {
-  // Clean up interval when page is destroyed
-  if (updateInterval) {
-    clearInterval(updateInterval)
-  }
+  if (updateInterval) clearInterval(updateInterval)
 })
 </script>
 
