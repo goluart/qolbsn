@@ -1,9 +1,8 @@
 <!-- app.vue -->
 <template>
-  <div>
-    <!-- NuxtPage displays the current page -->
+  <NuxtLayout>
     <NuxtPage />
-  </div>
+  </NuxtLayout>
 </template>
 
 <script setup>
