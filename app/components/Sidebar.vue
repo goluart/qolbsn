@@ -12,7 +12,7 @@
 <style scoped>
 .sidebar {
   width: 220px;
-  height: 100vh;
+  height: auto;
   background: #0f172a;
   padding: 20px;
   border-right: 1px solid rgba(255,255,255,0.05);
