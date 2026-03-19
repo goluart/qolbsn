@@ -1,3 +1,7 @@
+<script setup>
+import SubmitTimerModal from './SubmitTimerModal.vue';
+</script>
+
 <template>
   <aside class="sidebar">
     <h2 class="logo">Boss Tracker</h2>
@@ -5,6 +9,7 @@
     <nav>
       <NuxtLink to="/" class="nav-item">Field Boss Timers</NuxtLink>
       <NuxtLink to="/submit" class="nav-item">Submit Timers</NuxtLink>
+      <SubmitTimerModal />
     </nav>
   </aside>
 </template>
