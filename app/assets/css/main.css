@@ -47,3 +47,18 @@ body {
     opacity: 0;
     transform: translateY(10px);
 }
+
+/* Force UModal overlay/content positioning and visibility */
+[data-slot="overlay"] {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    background-color: rgba(0,0,0,0) !important;
+}
+
+[data-slot="content"] {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}

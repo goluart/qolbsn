@@ -1,7 +1,6 @@
 <template>
   <div class="app-layout">
     <Sidebar />
-
     <main class="page-content">
       <NuxtPage />
     </main>
